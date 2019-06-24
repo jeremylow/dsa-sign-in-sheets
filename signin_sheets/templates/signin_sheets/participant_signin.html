@@ -15,7 +15,7 @@
 
 <div class="measure-wide">
     <h1 class="fw3">Welcome to {{ event.name }}! Let&rsquo;s get you signed in!</h1>
-    <form action="" method="POST">
+    <form action="{% url 'event-signin' %}" method="POST">
         {% csrf_token %}
         {{ form }}
     <input type="submit" value="Sign in" class="b--none br2 pa3 ph4 bg-dark-red white dib tc fw4 mv4" />
