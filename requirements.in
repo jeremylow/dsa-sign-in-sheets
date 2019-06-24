@@ -1,6 +1,8 @@
-django
+django<2
 dj-database-url
 gunicorn
 psycopg2
 whitenoise
 django-localflavor
+django-phonenumber-field
+phonenumberslite
