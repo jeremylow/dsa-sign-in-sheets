@@ -14,6 +14,8 @@ from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, redirect, reverse
 
+from django.contrib.messages.views import SuccessMessageMixin
+
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import CreateView, FormView, DeleteView
 
@@ -71,28 +73,25 @@ class EventDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy('event-list')
 
 
-def event_signin(request, *args, **kwargs):
-    if not request.user.is_anonymous():
-        logout(request)
+class EventSigninView(SuccessMessageMixin, FormView):
+    form_class = ParticipantSigninForm
+    template_name = 'signin_sheets/participant_signin.html'
+    success_message = 'Your information has been saved.<br>Thanks for signing in!'
 
-    event = Event.objects.get(pk=kwargs.get('pk', None))
+    def get_success_url(self):
+        return reverse('event-signin', kwargs={"pk": self.kwargs.get('pk')})
 
-    if request.method == "GET":
-        return render(request,
-                      'signin_sheets/participant_signin.html',
-                      {'form': ParticipantSigninForm,
-                       'event': event})
-    elif request.method == "POST":
-        form = ParticipantSigninForm(request.POST)
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_anonymous():
+            logout(request)
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form, *args, **kwargs):
         if form.is_valid():
             user = form.save()
-            user.event = Event.objects.get(pk=kwargs.get('pk'))
+            user.event = Event.objects.get(pk=self.kwargs.get('pk'))
             user.save()
-            messages.success(request, "Your information has been saved.<br>Thanks for signing in!")
-
-            return redirect(reverse('event-signin',
-                                    kwargs={'pk': kwargs.get('pk')}))
-    return redirect(reverse('event-list'))
+        return super().form_valid(form, *args, **kwargs)
 
 
 @login_required
