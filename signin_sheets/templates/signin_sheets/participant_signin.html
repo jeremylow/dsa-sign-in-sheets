@@ -14,7 +14,8 @@
 {% endif %}
 
 <div class="measure-wide">
-    <h1 class="fw3">Welcome to {{ event.name }}! Let&rsquo;s get you signed in!</h1>
+    <h1 class="fw3">Welcome to {{ event_name }}! Let&rsquo;s get you signed in!</h1>
+    <span class="red">All fields are optional except first name. We &lt;3 your privacy.</span>
     <form action="." method="POST">
         {% csrf_token %}
         {{ form }}<br>

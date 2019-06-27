@@ -6,6 +6,7 @@ whitenoise
 django-localflavor
 django-phonenumber-field
 phonenumberslite
+django-context-decorator
 
 black
 pre-commit

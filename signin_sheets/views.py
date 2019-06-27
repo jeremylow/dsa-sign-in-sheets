@@ -19,6 +19,8 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import CreateView, FormView, DeleteView
 
+from django_context_decorator import context
+
 from signin_sheets.models import Event, EventParticipant
 from signin_sheets.forms import ParticipantSigninForm
 
@@ -77,6 +79,10 @@ class EventSigninView(SuccessMessageMixin, FormView):
     form_class = ParticipantSigninForm
     template_name = "signin_sheets/participant_signin.html"
     success_message = "Your information has been saved.<br>Thanks for signing in!"
+
+    @context
+    def event_name(self):
+        return Event.objects.get(pk=self.kwargs.get("pk")).name
 
     def get_success_url(self):
         return reverse("event-signin", kwargs={"pk": self.kwargs.get("pk")})
