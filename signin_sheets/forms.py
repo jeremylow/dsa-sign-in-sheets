@@ -14,22 +14,20 @@ class ParticipantSigninForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:
-            self.fields[field].widget.attrs.update({
-                'autocomplete': 'off'
-            })
+            self.fields[field].widget.attrs.update({"autocomplete": "off"})
 
     class Meta:
         """Class specific attrs. Required for ModelForm."""
 
         model = EventParticipant
         fields = [
-            'first_name',
-            'last_name',
-            'email',
-            'street_one',
-            'street_two',
-            'city',
-            'state',
-            'zip_code',
-            'telephone_number',
+            "first_name",
+            "last_name",
+            "email",
+            "street_one",
+            "street_two",
+            "city",
+            "state",
+            "zip_code",
+            "telephone_number",
         ]

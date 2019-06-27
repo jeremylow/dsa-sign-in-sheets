@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 WSGI config for dsa_signin_sheets project.
 

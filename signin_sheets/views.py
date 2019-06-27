@@ -26,23 +26,23 @@ from signin_sheets.forms import ParticipantSigninForm
 class HomePageView(TemplateView):
     """Front page kind of view."""
 
-    template_name = 'signin_sheets/home.html'
+    template_name = "signin_sheets/home.html"
 
 
 class FirstRun(CreateView):
     """Initialize app & create first user."""
 
     model = settings.AUTH_USER_MODEL
-    template_name = 'first_run.html'
+    template_name = "first_run.html"
     form_class = UserCreationForm
-    success_url = reverse_lazy('login')
+    success_url = reverse_lazy("login")
 
 
 class EventCreateView(LoginRequiredMixin, CreateView):
     """Create a new event."""
 
     model = Event
-    fields = ['name', 'event_date']
+    fields = ["name", "event_date"]
 
     def form_valid(self, form):
         resp = super().form_valid(form)
@@ -70,16 +70,16 @@ class EventDeleteView(LoginRequiredMixin, DeleteView):
     """Delete an event from the system."""
 
     model = Event
-    success_url = reverse_lazy('event-list')
+    success_url = reverse_lazy("event-list")
 
 
 class EventSigninView(SuccessMessageMixin, FormView):
     form_class = ParticipantSigninForm
-    template_name = 'signin_sheets/participant_signin.html'
-    success_message = 'Your information has been saved.<br>Thanks for signing in!'
+    template_name = "signin_sheets/participant_signin.html"
+    success_message = "Your information has been saved.<br>Thanks for signing in!"
 
     def get_success_url(self):
-        return reverse('event-signin', kwargs={"pk": self.kwargs.get('pk')})
+        return reverse("event-signin", kwargs={"pk": self.kwargs.get("pk")})
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_anonymous():
@@ -89,59 +89,65 @@ class EventSigninView(SuccessMessageMixin, FormView):
     def form_valid(self, form, *args, **kwargs):
         if form.is_valid():
             user = form.save()
-            user.event = Event.objects.get(pk=self.kwargs.get('pk'))
+            user.event = Event.objects.get(pk=self.kwargs.get("pk"))
             user.save()
         return super().form_valid(form, *args, **kwargs)
 
 
 @login_required
 def event_participants(request, *args, **kwargs):
-    event = Event.objects.get(pk=kwargs.get('pk', None))
+    event = Event.objects.get(pk=kwargs.get("pk", None))
     if event.event_admin.id != request.user.id:
         return HttpResponseForbidden()
     participants = EventParticipant.objects.all().filter(event=event)
-    return render(request,
-                  'signin_sheets/participant_list.html',
-                  {'participants': participants,
-                   'event': event})
+    return render(
+        request,
+        "signin_sheets/participant_list.html",
+        {"participants": participants, "event": event},
+    )
 
 
 @login_required
 def event_to_csv(request, *args, **kwargs):
-    event = Event.objects.get(pk=kwargs.get('pk', None))
+    event = Event.objects.get(pk=kwargs.get("pk", None))
     if event.event_admin.id != request.user.id:
         return HttpResponseForbidden()
     participants = EventParticipant.objects.all().filter(event=event)
 
-    response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = f'attachment; filename="{ event.id }.csv"'
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = f'attachment; filename="{ event.id }.csv"'
 
     writer = csv.writer(response)
-    writer.writerow([
-            'first_name',
-            'last_name',
-            'email',
-            'street_one',
-            'street_two',
-            'city',
-            'state',
-            'zip_code',
-            'telephone_number',
-        ])
+    writer.writerow(
+        [
+            "first_name",
+            "last_name",
+            "email",
+            "street_one",
+            "street_two",
+            "city",
+            "state",
+            "zip_code",
+            "telephone_number",
+        ]
+    )
     for part in participants:
-        writer.writerow([
-            part.first_name,
-            part.last_name,
-            part.email,
-            part.street_one,
-            part.street_two,
-            part.city,
-            part.state,
-            part.zip_code,
-            part.telephone_number,])
+        writer.writerow(
+            [
+                part.first_name,
+                part.last_name,
+                part.email,
+                part.street_one,
+                part.street_two,
+                part.city,
+                part.state,
+                part.zip_code,
+                part.telephone_number,
+            ]
+        )
     return response
 
 
 def user_logout(request):
     logout(request)
-    return redirect('/')
+    return redirect("/")

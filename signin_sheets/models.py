@@ -1,27 +1,25 @@
+# -*- coding: utf-8 -*-
 import datetime
 
 from django.conf import settings
 from django.db import models
 from django.shortcuts import reverse
 from phonenumber_field.modelfields import PhoneNumberField
-from localflavor.us.models import (
-    USZipCodeField,
-    USStateField,
-)
+from localflavor.us.models import USZipCodeField, USStateField
 
 
 class Event(models.Model):
-    event_admin = models.ForeignKey(settings.AUTH_USER_MODEL,
-                                    on_delete=models.CASCADE,
-                                    null=True)
+    event_admin = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True
+    )
     name = models.CharField(max_length=255)
     event_date = models.DateField(default=datetime.date.today, blank=True)
 
     def __str__(self):
-        return f'{self.name} ({self.event_date})'
+        return f"{self.name} ({self.event_date})"
 
     def get_absolute_url(self):
-        return reverse('event-detail', kwargs={'pk': self.pk})
+        return reverse("event-detail", kwargs={"pk": self.pk})
 
 
 class EventParticipant(models.Model):
